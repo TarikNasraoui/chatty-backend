@@ -33,7 +33,7 @@
       "@notification/*": ["src/features/notifications/*"],
       "@image/*": ["src/features/images/*"],
       "@chat/*": ["src/features/chat/*"],
-      "@global/*": ["src/shared/globals/*"],
+      "@global/*": ["src/shared/global/*"],
       "@service/*": ["src/shared/services/*"],
       "@socket/*": ["src/shared/sockets/*"],
       "@worker/*": ["src/shared/workers/*"],
