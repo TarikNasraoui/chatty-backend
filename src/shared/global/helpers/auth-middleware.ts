@@ -9,7 +9,7 @@ export class AuthMiddleware {
   public verifyUser(req: Request, _res: Response, next: NextFunction): void {
     if (!req.session?.jwt) {
       throw new NotAuthorizedError(
-        'Token is not available. Please login again.'
+        'Token is not available. Please login again!!!. '
       );
     }
     try {

@@ -14,7 +14,6 @@ export class SignIn {
   @joiValidation(loginSchema)
   public async read(req: Request, res: Response) {
     const { username, password } = req.body;
-    console.log(username, password);
     const existingUser: IAuthDocument = await authService.getAuthUserByUsername(
       username
     );
@@ -46,20 +45,9 @@ export class SignIn {
     );
 
     req.session = { jwt: userJwt };
-
-    const userDocument: IUserDocument = {
-      ...user,
-      authId: existingUser!.uId,
-      email: existingUser!.email,
-      username: existingUser!.username,
-      avatarColor: existingUser!.avatarColor,
-      uId: existingUser!.uId,
-      createdAt: existingUser!.createdAt,
-    } as IUserDocument;
-
     res.status(HTTP_STATUS.OK).json({
       message: 'User login successfully',
-      user: userDocument,
+      user: existingUser,
       token: userJwt,
     });
   }
