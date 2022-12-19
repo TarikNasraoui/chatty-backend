@@ -197,7 +197,9 @@ describe('SignUp', () => {
       .mockResolvedValue(authMock);
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
-      expect(error.serializeErrors().message).toEqual('Invalid credentials');
+      expect(error.serializeErrors().message).toEqual(
+        'Username or email already exist'
+      );
     });
   });
 

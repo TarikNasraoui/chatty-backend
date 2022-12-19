@@ -21,6 +21,7 @@ import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import 'express-async-errors';
 import Logger from 'bunyan';
+import { SocketIOPostHandler } from '@socket/post';
 
 const SERVER_PORT = 5100;
 const log: Logger = config.createLogger('server');
@@ -43,7 +44,7 @@ export class ChattyServer {
       cookieSession({
         name: 'session',
         keys: [config.SECRET_KEY_ONE!, config.SECRET_KEY_TWO!],
-        maxAge: 5000,
+        maxAge: 24 * 7 * 3600000,
         secure: config.NODE_ENV !== 'development',
       })
     );
@@ -119,5 +120,10 @@ export class ChattyServer {
       log.info(`Server running on port http://localhost:${SERVER_PORT}`);
     });
   }
-  private socketIOConnections(io: Server): void {}
+  private socketIOConnections(io: Server): void {
+    const socketIOPostHandler: SocketIOPostHandler = new SocketIOPostHandler(
+      io
+    );
+    socketIOPostHandler.listen();
+  }
 }

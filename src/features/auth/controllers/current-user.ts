@@ -11,6 +11,7 @@ export class CurrentUser {
     let isUser = false;
     let token = null;
     let user = null;
+
     const cachedUser: IUserDocument = (await userCache.getUserFromCache(
       `${req.currentUser!.userId}`
     )) as IUserDocument;
