@@ -30,12 +30,9 @@ export class SignIn {
       throw new BadRequestError('Invalid credentials');
     }
 
-    const user: IUserDocument = await userService.getUserByAuthId(
-      `${existingUser._id}`
-    );
     const userJwt = JWT.sign(
       {
-        userId: user,
+        userId: existingUser._id,
         uId: existingUser.uId,
         email: existingUser.email,
         username: existingUser.username,
