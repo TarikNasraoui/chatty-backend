@@ -5,12 +5,12 @@ import { ServerError } from '@global/helpers/error-handler';
 import {
   ISavePostToCache,
   IPostDocument,
-  IReactions,
   IGetPostsQuery,
 } from '@post/interfaces/post.interface';
 import { Helpers } from '@global/helpers/helpers';
 import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 import { PostModel } from '@post/models/post.schema';
+import { IReactions } from '@reaction/interfaces/reaction.interface';
 
 export type PostCacheMultiType =
   | string
