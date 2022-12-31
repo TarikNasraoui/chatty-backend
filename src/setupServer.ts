@@ -1,11 +1,4 @@
-import {
-  Application,
-  json,
-  urlencoded,
-  Response,
-  Request,
-  NextFunction,
-} from 'express';
+import { Application, json, urlencoded, Response, Request, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -22,6 +15,8 @@ import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import 'express-async-errors';
 import Logger from 'bunyan';
 import { SocketIOPostHandler } from '@socket/post';
+import { SocketIOFollowerHandler } from '@socket/followers';
+import { SocketIOUserHandler } from '@socket/user';
 
 const SERVER_PORT = 5100;
 const log: Logger = config.createLogger('server');
@@ -69,24 +64,15 @@ export class ChattyServer {
   }
   private globalErrorHandler(app: Application): void {
     app.all('*', (req: Request, res: Response) => {
-      res
-        .status(HTTP_STATUS.NOT_FOUND)
-        .json({ message: `${req.originalUrl} not found` });
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
     });
 
-    app.use(
-      (
-        error: IErrorResponse,
-        _req: Request,
-        res: Response,
-        next: NextFunction
-      ) => {
-        if (error instanceof CustomError) {
-          return res.status(error.statusCode).json(error.serializeErrors());
-        }
-        next();
+    app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).json(error.serializeErrors());
       }
-    );
+      next();
+    });
   }
 
   private async startServer(app: Application): Promise<void> {
@@ -121,9 +107,12 @@ export class ChattyServer {
     });
   }
   private socketIOConnections(io: Server): void {
-    const socketIOPostHandler: SocketIOPostHandler = new SocketIOPostHandler(
-      io
-    );
-    socketIOPostHandler.listen();
+    const postSocketHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
+    const followerSocketHandler: SocketIOFollowerHandler = new SocketIOFollowerHandler(io);
+    const userSocketHandler: SocketIOUserHandler = new SocketIOUserHandler(io);
+
+    postSocketHandler.listen();
+    followerSocketHandler.listen();
+    userSocketHandler.listen();
   }
 }
