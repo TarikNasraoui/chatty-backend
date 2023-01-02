@@ -9,13 +9,9 @@ import { IEmailJob } from '@user/interfaces/user.interface';
 import { IPostJobData } from '@post/interfaces/post.interface';
 import { IReactionJob } from '@reaction/interfaces/reaction.interface';
 import { ICommentJob } from '@comment/interfaces/comment.interface';
+import { INotificationJobData } from '@notification/interfaces/notification.interface';
 
-type IBaseJobData =
-  | IAuthJob
-  | IEmailJob
-  | IPostJobData
-  | IReactionJob
-  | ICommentJob;
+type IBaseJobData = IAuthJob | IEmailJob | IPostJobData | IReactionJob | ICommentJob | INotificationJobData;
 
 let bullAdapters: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
@@ -56,11 +52,7 @@ export abstract class BaseQueue {
     });
   }
 
-  protected processJob(
-    name: string,
-    concurrency: number,
-    callback: Queue.ProcessCallbackFunction<void>
-  ): void {
+  protected processJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<void>): void {
     this.queue.process(name, concurrency, callback);
   }
 }
