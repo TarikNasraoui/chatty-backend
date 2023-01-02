@@ -9,6 +9,7 @@ class EmailWorker {
   async addNotificationEmail(job: Job, done: DoneCallback) {
     try {
       const { template, receiverEmail, subject } = job.data;
+
       await mailTransport.sendEmail(receiverEmail, subject, template);
 
       job.progress(100);
