@@ -8,6 +8,7 @@ import compression from 'compression';
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
+import apiStats from 'swagger-stats';
 import http from 'http';
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
@@ -32,6 +33,7 @@ export class ChattyServer {
     this.securityMiddleware(this.app);
     this.standardMiddleware(this.app);
     this.routesMiddleware(this.app);
+    this.apiMonitoring(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
   }
@@ -63,6 +65,15 @@ export class ChattyServer {
   private routesMiddleware(app: Application): void {
     applicationRoutes(app);
   }
+
+  private apiMonitoring(app: Application): void {
+    app.use(
+      apiStats.getMiddleware({
+        uriPath: '/api-monitoring',
+      })
+    );
+  }
+
   private globalErrorHandler(app: Application): void {
     app.all('*', (req: Request, res: Response) => {
       res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
@@ -77,6 +88,9 @@ export class ChattyServer {
   }
 
   private async startServer(app: Application): Promise<void> {
+    if (!config.JWT_TOKEN) {
+      throw new Error('JWT_TOKEN must be provided');
+    }
     try {
       const httpServer: http.Server = new http.Server(app);
       const socketIO: Server = await this.createSocketIO(httpServer);
@@ -102,7 +116,9 @@ export class ChattyServer {
   }
 
   private startHttpServer(httpServer: http.Server): void {
+    log.info(`Worker with process id of ${process.pid} has started...`);
     log.info(`Server has started with process ${process.pid}`);
+
     httpServer.listen(SERVER_PORT, () => {
       log.info(`Server running on port http://localhost:${SERVER_PORT}`);
     });
